@@ -28,6 +28,7 @@ import { ProductEditor } from './pages/admin/ProductEditor';
 import { ReelEditor } from './pages/admin/ReelEditor';
 import { AdEditor } from './pages/admin/AdEditor';
 import { OrdersManagement } from './pages/admin/OrdersManagement';
+import { Login } from './pages/admin/Login';
 import { Footer } from './components/Footer';
 import { blogPosts } from './data/sampleData';
 
@@ -36,12 +37,21 @@ type PageView = 'home' | 'adventures' | 'gallery' | 'shop' | 'blog-post' | 'work
 export default function App() {
   const [currentView, setCurrentView] = useState<PageView>('home');
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
+  // Check auth state on mount
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token === 'authenticated') {
+      setIsAdminAuthenticated(true);
+    }
+  }, []);
 
   // Listen for hash changes to navigate
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1);
-      
+
       // Check if it's a blog post
       const post = blogPosts.find(p => p.slug === hash);
       if (post) {
@@ -150,6 +160,13 @@ export default function App() {
 
   // Render based on current view
   const renderContent = () => {
+    // Auth Check for Admin Pages
+    if (currentView.startsWith('admin')) {
+      if (!isAdminAuthenticated) {
+        return <Login />;
+      }
+    }
+
     switch (currentView) {
       case 'blog-post':
         if (!currentPost) return null;
