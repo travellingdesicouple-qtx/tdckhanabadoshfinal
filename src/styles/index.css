@@ -1,0 +1,66 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* React Quill Dark Mode Styling */
+.dark .ql-toolbar {
+  background-color: rgb(31 41 55);
+  border-color: rgb(55 65 81) !important;
+}
+
+.dark .ql-container {
+  background-color: rgb(31 41 55);
+  border-color: rgb(55 65 81) !important;
+  color: white;
+}
+
+.dark .ql-editor.ql-blank::before {
+  color: rgb(156 163 175);
+}
+
+.dark .ql-stroke {
+  stroke: rgb(209 213 219);
+}
+
+.dark .ql-fill {
+  fill: rgb(209 213 219);
+}
+
+.dark .ql-picker-label {
+  color: rgb(209 213 219);
+}
+
+.dark .ql-picker-options {
+  background-color: rgb(31 41 55);
+  border-color: rgb(55 65 81);
+}
+
+.dark .ql-picker-item:hover {
+  color: rgb(96 165 250);
+}
+
+.dark .ql-toolbar button:hover,
+.dark .ql-toolbar button.ql-active {
+  color: rgb(96 165 250);
+}
+
+.dark .ql-toolbar button:hover .ql-stroke,
+.dark .ql-toolbar button.ql-active .ql-stroke {
+  stroke: rgb(96 165 250);
+}
+
+.dark .ql-toolbar button:hover .ql-fill,
+.dark .ql-toolbar button.ql-active .ql-fill {
+  fill: rgb(96 165 250);
+}
+
+/* React Quill Editor Height */
+.ql-container {
+  min-height: 250px;
+  font-family: 'Merriweather', serif;
+  font-size: 16px;
+}
+
+.ql-editor {
+  min-height: 250px;
+}
