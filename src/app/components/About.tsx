@@ -1,15 +1,50 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Camera, Plane, MapPin, Award, Users, Heart, Video } from 'lucide-react';
-import { aboutData } from '../data/aboutData';
+import { aboutData } from '../data/aboutData'; // Fallback
+import { supabase, AboutInfo } from 'lib/supabase';
 
 export function About() {
+  const [data, setData] = useState<AboutInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAbout() {
+      try {
+        const { data: aboutInfo, error } = await supabase
+          .from('about_info')
+          .select('*')
+          .single();
+
+        if (aboutInfo) {
+          setData(aboutInfo);
+        }
+      } catch (error) {
+        console.error('Error fetching about info:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAbout();
+  }, []);
+
+  // Use dynamic data if available, otherwise fallback to static data (or defaults)
+  const displayData = {
+    countriesVisited: data?.countries_visited ?? 0, // Fallback to 0 if nothing in DB
+    imagesTaken: data?.images_taken ?? 0,
+    vlogsCreated: aboutData.vlogsCreated, // Keep this static or add to DB later if needed
+    subscribers: data?.subscribers ?? 0,
+    aboutText: data?.about_text ?? "Welcome to TDC Khanabadosh! We are currently updating our story. Check back soon!",
+    mainImage: data?.main_image ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
+    yearsOfTravel: data?.years_of_travel ?? 0
+  };
+
   const stats = [
-    { icon: MapPin, value: `${aboutData.countriesVisited}+`, label: "Countries Visited" },
-    { icon: Camera, value: `${aboutData.imagesTaken}+`, label: "Photos Captured" },
-    { icon: Video, value: `${aboutData.vlogsCreated}+`, label: "Vlogs Created" },
-    { icon: Users, value: `${(aboutData.subscribers / 1000).toFixed(0)}k+`, label: "Subscribers" },
+    { icon: MapPin, value: `${displayData.countriesVisited}+`, label: "Countries Visited" },
+    { icon: Camera, value: `${displayData.imagesTaken}+`, label: "Photos Captured" },
+    // { icon: Video, value: `${displayData.vlogsCreated}+`, label: "Vlogs Created" }, // Removed as per request to focus on main editable stats? Or keep static? Let's keep visually consistent but maybe static for now unless we add it to DB. user asked for specific updates.
+    { icon: Users, value: `${(displayData.subscribers / 1000).toFixed(0)}k+`, label: "Subscribers" },
   ];
 
   return (
@@ -42,9 +77,9 @@ export function About() {
             className="relative"
           >
             <div className="relative overflow-hidden rounded-2xl shadow-2xl cursor-pointer group"
-                 onClick={() => window.open(aboutData.images[0], '_blank')}>
+              onClick={() => window.open(displayData.mainImage, '_blank')}>
               <img
-                src={aboutData.images[0] || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800"}
+                src={displayData.mainImage}
                 alt="Travel Photographer"
                 className="h-[500px] w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
@@ -57,7 +92,7 @@ export function About() {
               {/* Floating Badge */}
               <div className="absolute bottom-4 right-4 rounded-2xl bg-emerald-500 p-6 shadow-xl">
                 <div className="text-center text-white">
-                  <div className="mb-1 font-['Inter'] text-3xl font-bold">{aboutData.yearsOfTravel}+</div>
+                  <div className="mb-1 font-['Inter'] text-3xl font-bold">{displayData.yearsOfTravel}+</div>
                   <div className="font-['Merriweather'] text-sm">Years Traveling</div>
                 </div>
               </div>
@@ -81,8 +116,8 @@ export function About() {
               Your Desi Travel Companions
             </h3>
 
-            <div className="space-y-4 font-['Merriweather'] text-gray-600 dark:text-gray-300">
-              <p>{aboutData.aboutText}</p>
+            <div className="space-y-4 font-['Merriweather'] text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+              <p>{displayData.aboutText}</p>
             </div>
 
             {/* What We Offer */}
