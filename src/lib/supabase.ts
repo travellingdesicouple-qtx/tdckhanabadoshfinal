@@ -8,7 +8,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
 // Create Supabase client (dummy client if not configured)
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key'
 )
 
@@ -110,12 +110,25 @@ export interface Order {
   updated_at: string
 }
 
+// About Section Data
+export interface AboutInfo {
+  id: string
+  years_of_travel: number
+  images_taken: number
+  countries_visited: number
+  subscribers: number
+  about_text: string
+  main_image: string
+  updated_at: string
+}
+
 // Storage buckets
 export const STORAGE_BUCKETS = {
   ADVERTISEMENTS: 'advertisements',
   BLOGS: 'blogs',
   PRODUCTS: 'products',
   ORDERS: 'orders',
+  ABOUT: 'about',
 } as const
 
 // Upload file to Supabase Storage
@@ -132,7 +145,7 @@ export async function uploadFile(
       .from(bucketName)
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false,
+        upsert: true, // Allow overwriting for about image if same name
       })
 
     if (error) throw error
